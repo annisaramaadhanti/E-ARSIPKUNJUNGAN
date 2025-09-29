@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daftar Surat Keluar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('siger-bg.png') repeat;
+      background-size: 180px;
+      background-attachment: fixed;
+      color: #333;
+      position: relative;
+    }
+    body::before {
+      content: ""; position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      z-index: -1;
+    }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      background-color: #1d3557; color: white;
+      padding: 20px 30px;
+    }
+    .menu-icon { font-size: 24px; cursor: pointer; }
+    .logout-link {
+      color: white; text-decoration: none; font-size: 14px;
+      padding: 8px 16px; border: 1px solid white; border-radius: 6px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .logout-link:hover { background-color: white; color: #1d3557; }
+    .sidebar {
+      position: fixed; top: 0; left: -250px;
+      width: 250px; height: 100%;
+      background-color: #1d3557;
+      padding-top: 60px;
+      transition: 0.3s ease;
+      z-index: 1000;
+    }
+    .sidebar a {
+      display: block; padding: 15px 25px;
+      color: white; text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .sidebar a:hover { background-color: #457b9d; }
+    .sidebar .close-btn {
+      text-align: right; padding: 10px 20px;
+      font-size: 18px; color: white;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .show-sidebar { left: 0; }
+
+    .main-content {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+    h1 {
+      text-align: center;
+      color: #1d3557;
+      margin-bottom: 20px;
+    }
+    .actions {
+      display: flex; justify-content: space-between; flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .btn-kembali, .btn-print {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      text-decoration: none;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .btn-kembali { background-color: #1d3557; }
+    .btn-kembali:hover { background-color: #0f223d; }
+    .btn-print { background-color: #27ae60; }
+    .btn-print:hover { background-color: #1e874b; }
+
+    .search-box {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .search-box input {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 250px;
+      font-size: 14px;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th.sortable { cursor: pointer; }
+    th.sortable:hover { background-color: #2a4e75; }
+    th { background-color: #1d3557; color: white; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+
+    .btn-hapus, .btn-edit {
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    .btn-hapus { background-color: #e74c3c; }
+    .btn-hapus:hover { background-color: #c0392b; }
+    .btn-edit { background-color: #f39c12; }
+    .btn-edit:hover { background-color: #d68910; }
+
+    @media print {
+      header, .sidebar, .actions, .btn-hapus, .btn-edit, .no-print, .search-box {
+        display: none !important;
+      }
+      body::before { display: none; }
+      .main-content { box-shadow: none; border: none; }
+      th {
+        background-color: #1d3557 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      tr:nth-child(even) { background-color: #f2f2f2 !important; }
+    }
+
+    /* Modal edit */
+    .modal {
+      display: none; position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center; align-items: center;
+      z-index: 2000;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+    }
+    .modal-content h2 { margin-bottom: 15px; color: #1d3557; }
+    .modal-content input {
+      width: 100%; padding: 8px; margin: 6px 0;
+      border: 1px solid #ccc; border-radius: 6px;
+    }
+    .modal-buttons {
+      margin-top: 15px; text-align: right;
+    }
+    .btn-close {
+      background-color: #aaa; color: white;
+      padding: 6px 12px; border: none; border-radius: 5px;
+      margin-right: 5px; cursor: pointer;
+    }
+    .btn-save {
+      background-color: #27ae60; color: white;
+      padding: 6px 12px; border: none; border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <i class="fa-solid fa-bars menu-icon" onclick="toggleSidebar()"></i>
+    <h1 style="font-size: 20px;"><i class="fa-solid fa-envelope-circle-check"></i> E-ArsipKunjungan</h1>
+    <a href="index.html" class="logout-link" onclick="return confirm('Yakin ingin logout?')">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+  </header>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="close-btn" onclick="toggleSidebar()">&times; Tutup</div>
+    <a href="form.html"><i class="fa-solid fa-pen-to-square"></i> Form Surat Masuk</a>
+    <a href="daftar.html"><i class="fa-solid fa-table"></i> Daftar Surat Masuk</a>
+    <a href="form-keluar.html"><i class="fa-solid fa-pen-to-square"></i> Form Surat Keluar</a>
+    <a href="daftar-keluar.html"><i class="fa-solid fa-table"></i> Daftar Surat Keluar</a>
+    <a href="biodata-pegawai.html"><i class="fa-solid fa-table"></i> Form Biodata Pegawai</a>
+    <a href="biodata-daftar.html"><i class="fa-solid fa-user-tie"></i> Daftar Biodata Pegawai</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h1>Daftar Surat Keluar</h1>
+
+    <div class="actions">
+      <a href="dashboard.html" class="btn-kembali">← Kembali ke Dashboard</a>
+      <button class="btn-print" onclick="window.print()">🖨️ Cetak PDF</button>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Cari surat...">
+    </div>
+
+    <table>
+      <thead>
+        <tr id="tableHeader">
+          <th class="sortable" onclick="sortTable(0)">No</th>
+          <th class="sortable" onclick="sortTable(1)">Nomor Surat</th>
+          <th class="sortable" onclick="sortTable(2)">Alamat Tujuan</th>
+          <th class="sortable" onclick="sortTable(3)">Tanggal</th>
+          <th class="sortable" onclick="sortTable(4)">Perihal</th>
+          <!-- kolom Aksi nanti ditambah via JS kalau role admin -->
+        </tr>
+      </thead>
+      <tbody id="tabelSuratKeluar"></tbody>
+    </table>
+  </div>
+
+  <!-- Modal Edit -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <h2>Edit Surat Keluar</h2>
+      <input type="text" id="editNomor" placeholder="Nomor Surat">
+      <input type="text" id="editAlamat" placeholder="Alamat Tujuan">
+      <input type="date" id="editTanggal">
+      <input type="text" id="editPerihal" placeholder="Perihal">
+      <div class="modal-buttons">
+        <button class="btn-close" onclick="closeModal()">Batal</button>
+        <button class="btn-save" onclick="saveEdit()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('show-sidebar');
+    }
+
+    const suratKeluar = JSON.parse(localStorage.getItem("suratKeluar")) || [];
+    const tabelBody = document.getElementById("tabelSuratKeluar");
+    const headerRow = document.getElementById("tableHeader");
+    const role = localStorage.getItem("role") || "pegawai"; // admin / pegawai
+
+    let editIndex = null;
+
+    function tampilkanData(data = suratKeluar) {
+      tabelBody.innerHTML = "";
+
+      // Tambahkan kolom Aksi hanya kalau admin
+      if (role === "admin" && !document.getElementById("aksiHeader")) {
+        const th = document.createElement("th");
+        th.textContent = "Aksi";
+        th.classList.add("no-print");
+        th.id = "aksiHeader";
+        headerRow.appendChild(th);
+      }
+
+      data.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        let aksiTd = "";
+        if (role === "admin") {
+          aksiTd = `
+            <td class="no-print">
+              <button class="btn-edit" onclick="editSurat(${index})">Edit</button>
+              <button class="btn-hapus" onclick="hapusSurat(${index})">Hapus</button>
+            </td>
+          `;
+        }
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${item.nomor}</td>
+          <td>${item.alamat}</td>
+          <td>${item.tanggal}</td>
+          <td>${item.perihal}</td>
+          ${aksiTd}
+        `;
+        tabelBody.appendChild(tr);
+      });
+    }
+
+    function hapusSurat(index) {
+      if (role !== "admin") return;
+      if (confirm("Yakin ingin menghapus surat ini?")) {
+        suratKeluar.splice(index, 1);
+        localStorage.setItem("suratKeluar", JSON.stringify(suratKeluar));
+        tampilkanData();
+      }
+    }
+
+    function editSurat(index) {
+      if (role !== "admin") return;
+      editIndex = index;
+      const surat = suratKeluar[index];
+      document.getElementById("editNomor").value = surat.nomor;
+      document.getElementById("editAlamat").value = surat.alamat;
+      document.getElementById("editTanggal").value = surat.tanggal;
+      document.getElementById("editPerihal").value = surat.perihal;
+      document.getElementById("editModal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("editModal").style.display = "none";
+    }
+
+    function saveEdit() {
+      if (editIndex !== null && role === "admin") {
+        suratKeluar[editIndex] = {
+          nomor: document.getElementById("editNomor").value,
+          alamat: document.getElementById("editAlamat").value,
+          tanggal: document.getElementById("editTanggal").value,
+          perihal: document.getElementById("editPerihal").value,
+        };
+        localStorage.setItem("suratKeluar", JSON.stringify(suratKeluar));
+        tampilkanData();
+        closeModal();
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const keyword = this.value.toLowerCase();
+      const filtered = suratKeluar.filter(item =>
+        item.nomor.toLowerCase().includes(keyword) ||
+        item.alamat.toLowerCase().includes(keyword) ||
+        item.tanggal.toLowerCase().includes(keyword) ||
+        item.perihal.toLowerCase().includes(keyword)
+      );
+      tampilkanData(filtered);
+    });
+
+    let sortAsc = true;
+    function sortTable(colIndex) {
+      suratKeluar.sort((a, b) => {
+        const aVal = Object.values(a)[colIndex - 1] || "";
+        const bVal = Object.values(b)[colIndex - 1] || "";
+        return sortAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      });
+      sortAsc = !sortAsc;
+      tampilkanData();
+    }
+
+    window.onload = () => tampilkanData();
+  </script>
+</body>
+</html>

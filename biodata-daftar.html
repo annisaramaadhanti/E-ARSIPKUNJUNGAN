@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daftar Biodata Pegawai</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('siger-bg.png') repeat;
+      background-size: 180px;
+      background-attachment: fixed;
+      color: #333;
+      position: relative;
+    }
+    body::before {
+      content: ""; position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      z-index: -1;
+    }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      background-color: #1d3557; color: white;
+      padding: 20px 30px;
+    }
+    .menu-icon { font-size: 24px; cursor: pointer; }
+    .logout-link {
+      color: white; text-decoration: none; font-size: 14px;
+      padding: 8px 16px; border: 1px solid white; border-radius: 6px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .logout-link:hover { background-color: white; color: #1d3557; }
+    .sidebar {
+      position: fixed; top: 0; left: -250px;
+      width: 250px; height: 100%;
+      background-color: #1d3557;
+      padding-top: 60px;
+      transition: 0.3s ease;
+      z-index: 1000;
+    }
+    .sidebar a {
+      display: block; padding: 15px 25px;
+      color: white; text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .sidebar a:hover { background-color: #457b9d; }
+    .sidebar .close-btn {
+      text-align: right; padding: 10px 20px;
+      font-size: 18px; color: white;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .show-sidebar { left: 0; }
+
+    .main-content {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1d3557;
+      margin-bottom: 20px;
+    }
+
+    .actions {
+      display: flex; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+
+    .btn-kembali, .btn-print {
+      padding: 10px 20px;
+      border: none; border-radius: 6px;
+      text-decoration: none; color: white;
+      cursor: pointer; transition: background-color 0.3s ease;
+    }
+    .btn-kembali { background-color: #1d3557; }
+    .btn-kembali:hover { background-color: #0f223d; }
+    .btn-print { background-color: #27ae60; }
+    .btn-print:hover { background-color: #1e874b; }
+
+    .search-box {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .search-box input {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 250px;
+      font-size: 14px;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th { background-color: #1d3557; color: white; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+
+    .btn-hapus, .btn-edit {
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-hapus { background-color: #e74c3c; }
+    .btn-hapus:hover { background-color: #c0392b; }
+    .btn-edit { background-color: #f39c12; }
+    .btn-edit:hover { background-color: #d68910; }
+
+    /* Tombol aksi sejajar */
+    .aksi-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    @media print {
+      header, .sidebar, .actions, .btn-hapus, .btn-edit, .no-print, .search-box {
+        display: none !important;
+      }
+      body::before { display: none; }
+      .main-content { box-shadow: none; border: none; }
+      th {
+        background-color: #1d3557 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      tr:nth-child(even) { background-color: #f2f2f2 !important; }
+    }
+
+    /* Modal edit */
+    .modal {
+      display: none; position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center; align-items: center;
+      z-index: 2000;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+    }
+    .modal-content h2 { margin-bottom: 15px; color: #1d3557; }
+    .modal-content input {
+      width: 100%; padding: 8px; margin: 6px 0;
+      border: 1px solid #ccc; border-radius: 6px;
+    }
+    .modal-buttons {
+      margin-top: 15px; text-align: right;
+    }
+    .btn-close {
+      background-color: #aaa; color: white;
+      padding: 6px 12px; border: none; border-radius: 5px;
+      margin-right: 5px; cursor: pointer;
+    }
+    .btn-save {
+      background-color: #27ae60; color: white;
+      padding: 6px 12px; border: none; border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <i class="fa-solid fa-bars menu-icon" onclick="toggleSidebar()"></i>
+    <h1 style="font-size: 20px;"><i class="fa-solid fa-user-tie"></i> Daftar Biodata Pegawai</h1>
+    <a href="index.html" class="logout-link" onclick="return confirm('Yakin ingin logout?')">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+  </header>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="close-btn" onclick="toggleSidebar()">&times; Tutup</div>
+    <a href="form.html"><i class="fa-solid fa-pen-to-square"></i> Form Surat Masuk</a>
+    <a href="daftar.html"><i class="fa-solid fa-table"></i> Daftar Surat Masuk</a>
+    <a href="form-keluar.html"><i class="fa-solid fa-pen-to-square"></i> Form Surat Keluar</a>
+    <a href="daftar-keluar.html"><i class="fa-solid fa-table"></i> Daftar Surat Keluar</a>
+    <a href="biodata-pegawai.html"><i class="fa-solid fa-table"></i> Form Biodata Pegawai</a>
+    <a href="biodata-daftar.html"><i class="fa-solid fa-user-tie"></i> Daftar Biodata Pegawai</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h1>Daftar Biodata Pegawai</h1>
+
+    <div class="actions">
+      <a href="dashboard.html" class="btn-kembali">← Kembali ke Dashboard</a>
+      <button class="btn-print" onclick="window.print()">🖨️ Cetak PDF</button>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Cari berdasarkan nama, nip, atau jabatan...">
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>Pangkat / Gol</th>
+          <th>Jabatan</th>
+          <th>NIP</th>
+          <th class="no-print aksi-header">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tabelPegawai"></tbody>
+    </table>
+  </div>
+
+  <!-- Modal Edit -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <h2>Edit Pegawai</h2>
+      <input type="text" id="editNama" placeholder="Nama">
+      <input type="text" id="editPangkat" placeholder="Pangkat / Gol">
+      <input type="text" id="editJabatan" placeholder="Jabatan">
+      <input type="text" id="editNip" placeholder="NIP">
+      <div class="modal-buttons">
+        <button class="btn-close" onclick="closeModal()">Batal</button>
+        <button class="btn-save" onclick="saveEdit()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('show-sidebar');
+    }
+
+    const role = localStorage.getItem("role") || "pegawai";
+    const dataPegawai = JSON.parse(localStorage.getItem("pegawaiList")) || [];
+    const tabel = document.getElementById("tabelPegawai");
+    const searchInput = document.getElementById("searchInput");
+    let editIndex = null;
+
+    function tampilkanData(filteredData = dataPegawai) {
+      tabel.innerHTML = "";
+      filteredData.forEach((pegawai, index) => {
+        let aksiTd = "";
+        if (role === "admin") {
+          aksiTd = `
+            <td class="no-print">
+              <div class="aksi-buttons">
+                <button class="btn-edit" onclick="editPegawai(${index})">Edit</button>
+                <button class="btn-hapus" onclick="hapusPegawai(${index})">Hapus</button>
+              </div>
+            </td>
+          `;
+        }
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${pegawai.nama}</td>
+          <td>${pegawai.pangkat}</td>
+          <td>${pegawai.jabatan}</td>
+          <td>${pegawai.nip}</td>
+          ${aksiTd}
+        `;
+        tabel.appendChild(tr);
+      });
+
+      if (role !== "admin") {
+        document.querySelector(".aksi-header").style.display = "none";
+      }
+    }
+
+    function hapusPegawai(index) {
+      if (role !== "admin") return;
+      if (confirm("Yakin ingin menghapus data ini?")) {
+        dataPegawai.splice(index, 1);
+        localStorage.setItem("pegawaiList", JSON.stringify(dataPegawai));
+        tampilkanData();
+      }
+    }
+
+    function editPegawai(index) {
+      editIndex = index;
+      const pegawai = dataPegawai[index];
+      document.getElementById("editNama").value = pegawai.nama;
+      document.getElementById("editPangkat").value = pegawai.pangkat;
+      document.getElementById("editJabatan").value = pegawai.jabatan;
+      document.getElementById("editNip").value = pegawai.nip;
+      document.getElementById("editModal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("editModal").style.display = "none";
+    }
+
+    function saveEdit() {
+      if (editIndex !== null) {
+        dataPegawai[editIndex] = {
+          nama: document.getElementById("editNama").value,
+          pangkat: document.getElementById("editPangkat").value,
+          jabatan: document.getElementById("editJabatan").value,
+          nip: document.getElementById("editNip").value,
+        };
+        localStorage.setItem("pegawaiList", JSON.stringify(dataPegawai));
+        tampilkanData();
+        closeModal();
+      }
+    }
+
+    searchInput.addEventListener('input', () => {
+      const keyword = searchInput.value.toLowerCase();
+      const filtered = dataPegawai.filter(p =>
+        p.nama.toLowerCase().includes(keyword) ||
+        p.nip.toLowerCase().includes(keyword) ||
+        p.jabatan.toLowerCase().includes(keyword)
+      );
+      tampilkanData(filtered);
+    });
+
+    window.onload = () => tampilkanData();
+  </script>
+</body>
+</html>

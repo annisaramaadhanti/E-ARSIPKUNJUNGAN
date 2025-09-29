@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Form Biodata Pegawai</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('siger-bg.png') repeat;
+      background-size: 180px;
+      background-attachment: fixed;
+      color: #333;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      z-index: -1;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #1d3557;
+      color: white;
+      padding: 20px 30px;
+    }
+
+    .menu-icon {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .logout-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 16px;
+      border: 1px solid white;
+      border-radius: 6px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .logout-link:hover {
+      background-color: white;
+      color: #1d3557;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: #1d3557;
+      padding-top: 60px;
+      transition: 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 15px 25px;
+      color: white;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar a:hover {
+      background-color: #457b9d;
+    }
+
+    .sidebar .close-btn {
+      text-align: right;
+      padding: 10px 20px;
+      font-size: 18px;
+      color: white;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .show-sidebar {
+      left: 0;
+    }
+
+    .main-content {
+      padding: 60px 30px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: 600;
+      color: #1d3557;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      background-color: #1d3557;
+      color: #fff;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0f223d;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 15px;
+      text-align: center;
+      width: 100%;
+      text-decoration: none;
+      color: #1d3557;
+      font-weight: 500;
+    }
+
+    .back-btn:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+      <!-- Cek Role -->
+<script>
+  const role = localStorage.getItem("role");
+  if (role !== "admin") {
+    alert("Anda tidak memiliki akses ke halaman ini.");
+    window.location.href = "biodata-daftar.html";
+  }
+</script>
+
+
+  <header>
+    <i class="fa-solid fa-bars menu-icon" onclick="toggleSidebar()"></i>
+    <h1 style="font-size: 20px;"><i class="fa-solid fa-user-tie"></i> Biodata Pegawai</h1>
+    <a href="index.html" class="logout-link" onclick="logout()"> 
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+  </header>
+
+  <div class="sidebar" id="sidebar">
+    <div class="close-btn" onclick="toggleSidebar()">&times; Tutup</div>
+    <a href="form.html" onclick="toggleSidebar()"><i class="fa-solid fa-pen-to-square"></i> Form Surat Masuk</a>
+    <a href="daftar.html" onclick="toggleSidebar()"><i class="fa-solid fa-table"></i> Daftar Surat Masuk</a>
+    <a href="form-keluar.html" onclick="toggleSidebar()"><i class="fa-solid fa-pen-to-square"></i> Form Surat Keluar</a>
+    <a href="daftar-keluar.html" onclick="toggleSidebar()"><i class="fa-solid fa-table"></i> Daftar Surat Keluar</a>
+    <a href="biodata-pegawai.html" onclick="toggleSidebar()"><i class="fa-solid fa-table"></i> Form Biodata Pegawai</a>
+    <a href="biodata-daftar.html"><i class="fa-solid fa-user-tie"></i> Daftar Biodata Pegawai</a>
+</div>
+
+  <div class="main-content">
+    <div class="container">
+      <h2>Form Biodata Pegawai</h2>
+      <form id="pegawaiForm">
+        <input type="hidden" id="editIndex" />
+
+        <label>Nama</label>
+        <input type="text" id="nama" required />
+
+        <label>Pangkat / Gol</label>
+        <input type="text" id="pangkat" required />
+
+        <label>Jabatan</label>
+        <input type="text" id="jabatan" required />
+
+        <label>NIP</label>
+        <input type="text" id="nip" required />
+
+        <button type="submit">Simpan</button>
+      </form>
+
+      <a class="back-btn" href="dashboard.html">&larr; Kembali ke Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('show-sidebar');
+    }
+
+    function logout() {
+      localStorage.removeItem("role");
+      return true;
+    }
+
+    const form = document.getElementById('pegawaiForm');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nama = document.getElementById('nama').value;
+      const pangkat = document.getElementById('pangkat').value;
+      const jabatan = document.getElementById('jabatan').value;
+      const nip = document.getElementById('nip').value;
+      const editIndex = document.getElementById('editIndex').value;
+
+      let data = JSON.parse(localStorage.getItem('pegawaiList')) || [];
+
+      if (editIndex === '') {
+        data.push({ nama, pangkat, jabatan, nip });
+      } else {
+        data[editIndex] = { nama, pangkat, jabatan, nip };
+        document.getElementById('editIndex').value = '';
+      }
+
+      localStorage.setItem('pegawaiList', JSON.stringify(data));
+      form.reset();
+      alert("Data pegawai berhasil disimpan!");
+      window.location.href = "biodata-daftar.html";
+    });
+  </script>
+</body>
+</html>

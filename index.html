@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Sistem Surat Masuk</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1d3557, #ffffff);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-box {
+      background: white;
+      padding: 40px 35px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-box img {
+      width: 70px;
+      margin-bottom: 20px;
+    }
+
+    .login-box h2 {
+      font-size: 22px;
+      color: #1d3557;
+      margin-bottom: 25px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 45px 12px 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .input-group i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #1d3557;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0f223d;
+    }
+
+    .footer {
+      margin-top: 25px;
+      font-size: 13px;
+      color: #999;
+    }
+
+    @media (max-width: 480px) {
+      .login-box {
+        margin: 0 20px;
+        padding: 30px 25px;
+      }
+
+      .login-box h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <img src="LOGOBAPPEDA.png" alt="Logo" />
+    <h2>Login</h2>
+    <form action="dashboard.html" method="POST" onsubmit="return loginCheck()">
+      <div class="input-group">
+        <input type="text" id="username" placeholder="Username" required />
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="input-group">
+        <input type="password" id="password" placeholder="Password" required />
+        <i class="fas fa-lock"></i>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    <div class="footer">© 2025 Magang Unila</div>
+  </div>
+
+<script>
+  function loginCheck() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+
+    if (user === "admin" && pass === "admin123") {
+      localStorage.setItem("role", "admin");
+      return true;
+    } else if (user === "pegawai" && pass === "pegawai123") {
+      localStorage.setItem("role", "pegawai");
+      return true;
+    } else {
+      alert("Username atau Password salah!");
+      return false;
+    }
+  }
+</script>
+
+</body>
+</html>
